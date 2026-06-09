@@ -28,3 +28,11 @@ What all we need to complete this project -
 - KEY HIGHLIGHTS -
   - We will use programatic constraints for UI 
 
+#RESULT:
+
+
+https://github.com/user-attachments/assets/286f10ed-6391-416e-b448-3ddf99d733d0
+
+
+
+
