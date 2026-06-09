@@ -97,13 +97,30 @@ extension ProductListViewController: UITableViewDelegate, UITableViewDataSource{
             viewModel.fetchNextPage()
         }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        guard indexPath.row < viewModel.products.count else {
+            return
+        }
+        
+        let viewController = ProductDetailsViewController(product: viewModel.products[indexPath.row])
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
 }
 extension ProductListViewController: ProductListViewModelDelegate{
     
     func didUpdateProducts() {
+        
         reloadTableView()
+        
         self.tableView.tableFooterView = nil
         errorView.isHidden = true
+        
+        if viewModel.products.isEmpty{
+            errorView.isHidden = false
+            errorView.set(text: "No products found", showRetry: false)
+        }
     }
     
     func didFail(withError: any AppError, type: ProductListViewModel.ErrorType) {
@@ -111,7 +128,7 @@ extension ProductListViewController: ProductListViewModelDelegate{
         switch type {
         case .fullScreen:
             errorView.isHidden = false
-            errorView.setErrorText(withError.message)
+            errorView.set(text: withError.message)
             break
         case .footer:
             self.tableView.tableFooterView = FooterErrorView(frame: .init(x: 0, y: 0, width: self.view.bounds.width, height: 100), error: withError.message){

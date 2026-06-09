@@ -83,8 +83,9 @@ class FooterErrorView: UIView {
         tapAction()
     }
     
-    func setErrorText(_ text: String){
+    func set(text: String, showRetry: Bool = true){
         error = text
+        retryButton.isHidden = !showRetry
     }
 }
 
