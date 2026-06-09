@@ -16,4 +16,9 @@ class HttpService{
         
         session.dataTask(with: request, completionHandler: completion).resume()
     }
+    
+    func send(url: URL,_ completion: @escaping (Data?, URLResponse?, Error?) -> Void){
+        
+        session.dataTask(with: url, completionHandler: completion).resume()
+    }
 }

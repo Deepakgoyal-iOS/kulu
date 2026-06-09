@@ -31,6 +31,10 @@ struct InternalError: AppError{
     }
     
 }
+extension NSError{
+    
+    static let noInternetError = NSError(domain: "noInternetError", code: -1009, userInfo: [NSLocalizedDescriptionKey: "No Internet!, Please connect to internet and try again."])
+}
 
 struct APIError: AppError, Codable{
     

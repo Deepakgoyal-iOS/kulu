@@ -11,37 +11,30 @@ class ProductListAPIRepository: BasePaginatedAPIRepository {
     
     var service: BaseDataService = NetworkService.shared
     
-    var firstPageIndex: Int = 1
+    var firstPageIndex: Int = 0
     
-    var currentPageIndex: Int = 1
+    var currentPageIndex: Int = 0
     
     var hasMorePages: Bool = false
     
-    func hasNextPage() -> Bool {
-        return true
+    private var limit = 20
+    
+    func handleCurrentPageIndex(for response: APIResponse<ProductListResponse>) {
+        
+        if case .success(let data) = response {
+            hasMorePages = (data.data?.count ?? 0) == limit
+            currentPageIndex = hasMorePages ? currentPageIndex + 1 : currentPageIndex
+        }
     }
+
     
     func execute(_ completionHandler: @escaping (APIResponse<ProductListResponse>) -> Void){
         
-        let request = APIRequest(method: .get, path: "products", body: nil, queryItems: ["page": "\(firstPageIndex)", "limit": "10", "category": "electronics"])
+        let request = APIRequest(method: .get, path: "products", body: nil, queryItems: ["page": "\(currentPageIndex)", "limit": "\(limit)"])
         service.fetch(request: request, responseType: ProductListResponse.self, completionHandler)
         
     }
     
-}
-
-struct Product: Codable{
-    
-    var id: UInt64?
-    var title: String?
-    var description: String?
-    var category: String?
-    var price: Double?
-    var image: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case title, description, category, price, image, id
-    }
 }
 
 struct ProductListResponse: Codable{

@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol BasePaginatedAPIRepository: BaseAPIRepository{
+protocol BasePaginatedAPIRepository: AnyObject, BaseAPIRepository{
 
     var firstPageIndex: Int { get }
     
@@ -15,23 +15,27 @@ protocol BasePaginatedAPIRepository: BaseAPIRepository{
     
     var hasMorePages: Bool { get set}
     
-    func hasNextPage() -> Bool
+    func handleCurrentPageIndex(for response: APIResponse<ResponseType>)
+    
 }
 extension BasePaginatedAPIRepository{
     
-    mutating func firstPage(_ completionHandler: @escaping ( _ response: APIResponse<ResponseType>) -> Void){
+    func fetchFirstPage(_ completionHandler: @escaping ( _ response: APIResponse<ResponseType>) -> Void){
         
         currentPageIndex  = firstPageIndex
-        hasMorePages = true
-        execute(completionHandler)
-        hasMorePages = hasNextPage()
+        resumeExecution(completionHandler)
     }
     
-    mutating func nextPage(_ completionHandler: @escaping ( _ response: APIResponse<ResponseType>) -> Void){
+    func fetchNextPage(_ completionHandler: @escaping ( _ response: APIResponse<ResponseType>) -> Void){
+        resumeExecution(completionHandler)
+    }
+    
+    private func resumeExecution(_ completionHandler: @escaping ( _ response: APIResponse<ResponseType>) -> Void){
         
-        currentPageIndex+=1
-        execute(completionHandler)
-        hasMorePages = hasNextPage()
+        execute(){ [weak self] response in
+            completionHandler(response)
+            self?.handleCurrentPageIndex(for: response)
+        }
     }
     
 }

@@ -10,10 +10,10 @@ import Foundation
 class NoInternetInterceptor: RequestInterceptor{
     
     func intercept<T>(request: APIRequest, responseType: T.Type) -> RequestInterceptorResult<T> where T : Decodable {
-        return .respond(.failure(InternalError(error: URLError(.notConnectedToInternet))))
+        return .respond(.failure(InternalError(error: NSError.noInternetError)))
     }
     
     func shouldIntercept<T>(request: APIRequest, responseType: T.Type) -> Bool where T : Decodable  {
-        return false
+        return !NetworkMonitor.shared.isConnected
     }
 }
